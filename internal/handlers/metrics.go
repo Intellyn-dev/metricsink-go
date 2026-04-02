@@ -25,7 +25,10 @@ func (h *MetricsHandler) IngestMetric(c *gin.Context) {
 	}
 	event.ID = uuid.New().String()
 
-	region := event.Tags["region"]
+	var region string
+	if event.Tags != nil {
+		region = event.Tags["region"]
+	}
 
 	h.agg.Add(event.Service, event.MetricName, event.Value)
 
