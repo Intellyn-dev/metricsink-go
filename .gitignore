@@ -1,0 +1,11 @@
+# Binaries
+metricsink
+*.exe
+
+# Environment
+.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
