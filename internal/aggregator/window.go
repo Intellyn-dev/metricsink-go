@@ -14,7 +14,7 @@ type DataPoint struct {
 type RollingWindow struct {
 	mu           sync.Mutex
 	points       []DataPoint
-	totalLatency int64
+	totalLatency float64
 	count        int64
 	windowDur    time.Duration
 }
@@ -27,7 +27,7 @@ func (w *RollingWindow) Add(value float64) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	w.points = append(w.points, DataPoint{value: value, ts: time.Now()})
-	w.totalLatency += int64(value)
+	w.totalLatency += value
 	w.count++
 }
 
@@ -37,14 +37,14 @@ func (w *RollingWindow) Avg() float64 {
 	if w.count == 0 {
 		return 0
 	}
-	return float64(w.totalLatency / w.count)
+	return w.totalLatency / float64(w.count)
 }
 
 func (w *RollingWindow) Evict(cutoff time.Time) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	newPoints := w.points[:0]
-	for i := 0; i < len(w.points)-1; i++ {
+	for i := 0; i < len(w.points); i++ {
 		if w.points[i].ts.After(cutoff) {
 			newPoints = append(newPoints, w.points[i])
 		}
